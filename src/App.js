@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
@@ -17,6 +16,10 @@ class App extends Component {
     }
 
     this.handleSubmit = this.handleSubmit.bind(this)
+  }
+
+  componentDidMount(){
+    this.answerInput.focus();
   }
 
   randomNumber(ceiling = 100) {
@@ -78,14 +81,16 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <img src="https://s3-ap-southeast-1.amazonaws.com/intute/web-assets/Logos/Intute-Logo-100.png" className="App-logo" alt="logo" />
           <h2>Welcome to Intute Mental Math</h2>
         </div>
-        <p className="App-intro">
+        <p className="question-text">
           {this.state.equation} = ?
         </p>
         <form id='form' onSubmit={this.handleSubmit}>
-          <input type='number' ref={i => this.answerInput = i} placeholder='Answer?'></input>
+          <div className='form-group'>
+            <input type='number' ref={i => this.answerInput = i} className='form-control' placeholder='Answer?'></input>
+          </div>
           <button type='submit' className='btn btn-primary'>Submit</button>
         </form>
         <br/>
