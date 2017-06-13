@@ -6,10 +6,11 @@ class App extends Component {
     super(props);
 
     const equation = this.randomEquation();
-    const answer = eval(equation);
+    const question = equation.question;
+    const answer = equation.answer;
 
     this.state = {
-      equation,
+      question,
       answer,
       correctCount: 0,
       wrongCount: 0
@@ -22,36 +23,47 @@ class App extends Component {
     this.answerInput.focus();
   }
 
-  randomNumber(ceiling = 100) {
+  randomNumber(ceiling = 50) {
     return Math.floor((Math.random() * ceiling) + 1);
   }
   randomOperator() {
-    var operators = ['+', '-', '*'];
+    var operators = ['+', '-', '*', '/'];
     var operator = operators[Math.floor(Math.random()*operators.length)];
     return operator;
   }
   randomEquation() {
-    let operator = this.randomOperator();
-    let num1, num2;
+    const operator = this.randomOperator();
+    let num1, num2, question, answer;
     switch(operator) {
       case '*':
         num1 = this.randomNumber(12);
         num2 = this.randomNumber(12);
+        question = `${num1} ${operator} ${num2}`.replace('*', '×');
+        answer = eval(`${num1} ${operator} ${num2}`);
         break;
       case '-':
         num1 = this.randomNumber();
-        num2 = this.randomNumber();
-        while (num1 < num2) {
-          num1 = this.randomNumber();
-          num2 = this.randomNumber();
-        }
-          break;
+        num2 = this.randomNumber(num1);
+        question = `${num1} ${operator} ${num2}`;
+        answer = eval(`${num1} ${operator} ${num2}`);
+        break;
+      case '/':
+        answer = this.randomNumber(12);
+        num2 = this.randomNumber(12);
+        num1 = eval(`${answer} * ${num2}`);
+        question = `${num1} ${operator} ${num2}`.replace('/', '÷');
+        break
       default:
         num1 = this.randomNumber();
         num2 = this.randomNumber();
+        question = `${num1} ${operator} ${num2}`;
+        answer = eval(`${num1} ${operator} ${num2}`);
         break;
     }
-    return `${num1} ${operator} ${num2}`;
+    return {
+      question,
+      answer
+    };
   }
 
   handleSubmit(event) {
@@ -59,22 +71,23 @@ class App extends Component {
 
     // Regen question
     let equation = this.randomEquation();
-    let answer = eval(equation);
+    let question = equation.question;
+    let answer = equation.answer;
 
     if (parseInt(this.answerInput.value, 10) === parseInt(this.state.answer, 10)) {
+      console.log('correct');
       this.setState({
         correctCount: this.state.correctCount + 1,
-        equation,
+        question,
         answer
       }, this.answerInput.value = '');
-      console.log('correct');
     } else {
+      console.log('wrong', this.state.answer);
       this.setState({
         wrongCount: this.state.wrongCount + 1,
-        equation,
+        question,
         answer
       }, this.answerInput.value = '');
-      console.log('wrong', this.state.answer);
     }
   }
   render() {
@@ -85,7 +98,7 @@ class App extends Component {
           <h2>Welcome to Intute Mental Math</h2>
         </div>
         <p className="question-text">
-          {this.state.equation} = ?
+          {this.state.question} = ?
         </p>
         <form id='form' onSubmit={this.handleSubmit}>
           <div className='form-group'>
