@@ -1,115 +1,101 @@
 import React, { Component } from 'react';
 import './App.css';
+import { Question } from './components';
+
+const Start = (props) => {
+  return (
+    <button className='btn btn-primary' onClick={props.onStart}>
+      Start
+    </button>
+  );
+}
+
+const Stop = (props) => {
+  return (
+    <button className='btn' onClick={props.onStop}>
+      Stop
+    </button>
+  );
+}
+
+const Score = ({ correct, wrong }) => {
+  if (correct + wrong !== 0) {
+    return (
+      <div className='score'>
+        You got {correct} out of {correct + wrong} correct!
+      </div>
+    );
+  } else {
+    return (
+      <div className='score'>
+        Press the "Start" button when you are ready!
+      </div>
+    );
+  };
+}
 
 class App extends Component {
   constructor(props) {
     super(props);
 
-    const equation = this.randomEquation();
-    const question = equation.question;
-    const answer = equation.answer;
-
     this.state = {
-      question,
-      answer,
+      start: null,
       correctCount: 0,
       wrongCount: 0
-    }
-
-    this.handleSubmit = this.handleSubmit.bind(this)
-  }
-
-  componentDidMount(){
-    this.answerInput.focus();
-  }
-
-  randomNumber(ceiling = 50) {
-    return Math.floor((Math.random() * ceiling) + 1);
-  }
-  randomOperator() {
-    var operators = ['+', '-', '*', '/'];
-    var operator = operators[Math.floor(Math.random()*operators.length)];
-    return operator;
-  }
-  randomEquation() {
-    const operator = this.randomOperator();
-    let num1, num2, question, answer;
-    switch(operator) {
-      case '*':
-        num1 = this.randomNumber(12);
-        num2 = this.randomNumber(12);
-        question = `${num1} ${operator} ${num2}`.replace('*', '×');
-        answer = eval(`${num1} ${operator} ${num2}`);
-        break;
-      case '-':
-        num1 = this.randomNumber();
-        num2 = this.randomNumber(num1);
-        question = `${num1} ${operator} ${num2}`;
-        answer = eval(`${num1} ${operator} ${num2}`);
-        break;
-      case '/':
-        answer = this.randomNumber(12);
-        num2 = this.randomNumber(12);
-        num1 = eval(`${answer} * ${num2}`);
-        question = `${num1} ${operator} ${num2}`.replace('/', '÷');
-        break
-      default:
-        num1 = this.randomNumber();
-        num2 = this.randomNumber();
-        question = `${num1} ${operator} ${num2}`;
-        answer = eval(`${num1} ${operator} ${num2}`);
-        break;
-    }
-    return {
-      question,
-      answer
     };
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
+  handleStart() {
+    this.setState({
+      start: true,
+      correctCount: 0,
+      wrongCount: 0
+    });
+  }
 
-    // Regen question
-    let equation = this.randomEquation();
-    let question = equation.question;
-    let answer = equation.answer;
+  handleStop() {
+    this.setState({
+      start: null
+    });
+  }
 
-    if (parseInt(this.answerInput.value, 10) === parseInt(this.state.answer, 10)) {
-      console.log('correct');
+  handleAnswer(answer_correct) {
+    if (answer_correct) {
       this.setState({
-        correctCount: this.state.correctCount + 1,
-        question,
-        answer
-      }, this.answerInput.value = '');
+        correctCount: this.state.correctCount + 1
+      });
     } else {
-      console.log('wrong', this.state.answer);
       this.setState({
-        wrongCount: this.state.wrongCount + 1,
-        question,
-        answer
-      }, this.answerInput.value = '');
+        wrongCount: this.state.wrongCount + 1
+      });
+    };
+  }
+
+  renderMainSection() {
+    if (this.state.start === null) {
+      return (
+        <div>
+          <Score correct={this.state.correctCount} wrong={this.state.wrongCount}/>
+          <Start onStart={this.handleStart.bind(this)}/>
+        </div>
+      );
+    } else {
+      return (
+        <Question handleAnswer={this.handleAnswer.bind(this)} questionNumber={this.state.correctCount + this.state.wrongCount + 1}/>
+      );
     }
   }
+
   render() {
     return (
       <div className="App">
         <div className="App-header">
           <img src="https://s3-ap-southeast-1.amazonaws.com/intute/web-assets/Logos/Intute-Logo-100.png" className="App-logo" alt="logo" />
           <h2>Welcome to Intute Mental Math</h2>
+          {this.state.start ? <Stop onStop={this.handleStop.bind(this)} className='stop'/> : null}
         </div>
-        <p className="question-text">
-          {this.state.question} = ?
-        </p>
-        <form id='form' onSubmit={this.handleSubmit}>
-          <div className='form-group'>
-            <input type='number' ref={i => this.answerInput = i} className='form-control' placeholder='Answer?'></input>
-          </div>
-          <button type='submit' className='btn btn-primary'>Submit</button>
-        </form>
-        <br/>
-        <br/>
-        <div>
-          {this.state.correctCount + this.state.wrongCount !== 0 ? `${this.state.correctCount}/${this.state.correctCount + this.state.wrongCount}` : ''}
+        <div className='content-container'>
+          {this.renderMainSection()}
         </div>
       </div>
     );

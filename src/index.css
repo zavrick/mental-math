@@ -4,6 +4,14 @@ body {
   font-family: sans-serif;
 }
 
+.content-container {
+  padding: 35px 20px;
+}
+
+.score {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
 .question-text {
   font-size: 2rem;
 }
