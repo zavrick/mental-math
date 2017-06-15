@@ -34,6 +34,31 @@ const Score = ({ correct, wrong }) => {
   };
 }
 
+const Time = ({ timeTaken }) => {
+  if (timeTaken) {
+    // let millis= timeTaken % 1000;
+    timeTaken = parseInt(timeTaken/1000);
+    let seconds = timeTaken % 60;
+    timeTaken = parseInt(timeTaken/60);
+    let minutes = timeTaken % 60;
+    timeTaken = parseInt(timeTaken/60);
+    let hours = timeTaken % 24;
+    let out = "";
+    if(hours && hours > 0) out += hours + " " + ((hours == 1)?"hr":"hrs") + " ";
+    if(minutes && minutes > 0) out += minutes + " " + ((minutes == 1)?"min":"mins") + " ";
+    if(seconds && seconds > 0) out += seconds + " " + ((seconds == 1)?"sec":"secs") + " ";
+    // if(millis&& millis> 0) out += millis+ " " + ((millis== 1)?"msec":"msecs") + " ";
+
+    return (
+      <div className='score'>
+        Time taken: {out.trim()}.
+      </div>
+    );
+  } else {
+    return null;
+  }
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -41,7 +66,9 @@ class App extends Component {
     this.state = {
       start: null,
       correctCount: 0,
-      wrongCount: 0
+      wrongCount: 0,
+      startTime: 0,
+      timeTaken: 0
     };
   }
 
@@ -49,13 +76,16 @@ class App extends Component {
     this.setState({
       start: true,
       correctCount: 0,
-      wrongCount: 0
+      wrongCount: 0,
+      startTime: (new Date()).getTime(),
+      timeTaken: 0
     });
   }
 
   handleStop() {
     this.setState({
-      start: null
+      start: null,
+      timeTaken: (new Date()).getTime() - this.state.startTime
     });
   }
 
@@ -76,6 +106,7 @@ class App extends Component {
       return (
         <div>
           <Score correct={this.state.correctCount} wrong={this.state.wrongCount}/>
+          {this.state.timeTaken ? <Time timeTaken={this.state.timeTaken} /> : null}
           <Start onStart={this.handleStart.bind(this)}/>
         </div>
       );
