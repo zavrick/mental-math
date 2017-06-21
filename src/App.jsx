@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './App.css';
-import { Question } from './components';
+import Question from './components';
 
 function StartButton(props) {
   return (
@@ -104,9 +104,9 @@ class App extends Component {
     this.state = {
       isStarted: false,
       correctCount: 0,
+      questionNumber: null, // use this to infer totalCount
       startTime: 0,
       endTime: 0,
-      questionNumber: null,
     };
 
     this.handleStart = this.handleStart.bind(this);
