@@ -27,28 +27,28 @@ StopButton.propTypes = {
   handleClick: PropTypes.func.isRequired,
 };
 
-function Score({ correct, wrong }) {
+function Score({ correctCount, totalCount }) {
   return (
     <div className="score">
-      You got {correct} out of {correct + wrong} correct!
+      You got {correctCount} out of {totalCount} correct!
     </div>
   );
 }
 
 Score.propTypes = {
-  correct: PropTypes.number.isRequired,
-  wrong: PropTypes.number.isRequired,
+  correctCount: PropTypes.number.isRequired,
+  totalCount: PropTypes.number.isRequired,
 };
 
 function TimeCount({ startTime, endTime }) {
-  let timeTaken = (endTime - startTime) / 1000;
-  const seconds = timeTaken % 60;
+  let timeTaken = Math.floor((endTime - startTime) / 1000);
+  const seconds = Math.floor(timeTaken % 60);
   timeTaken /= 60;
-  const minutes = timeTaken % 60;
+  const minutes = Math.floor(timeTaken % 60);
   timeTaken /= 60;
-  const hours = timeTaken % 24;
-  const time = `${hours > 0 && hours} ${hours > 1 ? 'hours' : 'hour'}
-    ${minutes > 0 && minutes} ${minutes > 1 ? 'minutes' : 'minute'}
+  const hours = Math.floor(timeTaken % 24);
+  const time = `${hours > 0 ? `${hours} ${hours > 1 ? 'hours' : 'hour'}` : ''}
+    ${minutes > 0 ? `${minutes} ${minutes > 1 ? 'minutes' : 'minute'}` : ''}
     ${seconds} ${seconds > 1 ? 'seconds' : 'second'}`;
 
   return (
@@ -63,20 +63,50 @@ TimeCount.propTypes = {
   endTime: PropTypes.number.isRequired,
 };
 
-TimeCount.propTypes = {
-  timeTaken: PropTypes.number.isRequired,
+function StoppedContent(props) {
+  const score = props.endTime - props.startTime > 0 &&
+    <Score correctCount={props.correctCount} totalCount={props.totalCount} />;
+  return (
+    <div>
+      {score}
+      {props.endTime - props.startTime > 0 ?
+        <TimeCount startTime={props.startTime} endTime={props.endTime} /> :
+        null}
+      <StartButton handleClick={props.handleStart} />
+    </div>
+  );
+}
+
+StoppedContent.propTypes = {
+  correctCount: PropTypes.number.isRequired,
+  totalCount: PropTypes.number.isRequired,
+  startTime: PropTypes.number.isRequired,
+  endTime: PropTypes.number.isRequired,
+  handleStart: PropTypes.func.isRequired,
 };
+
+function StartedContent(props) {
+  return (
+    <Question handleAnswer={props.handleAnswer} questionNumber={props.questionNumber} />
+  );
+}
+
+StartedContent.propTypes = {
+  questionNumber: PropTypes.number.isRequired,
+  handleAnswer: PropTypes.func.isRequired,
+};
+
 
 class App extends Component {
   constructor() {
     super();
 
     this.state = {
-      start: null,
+      isStarted: false,
       correctCount: 0,
-      wrongCount: 0,
       startTime: 0,
-      timeTaken: 0,
+      endTime: 0,
+      questionNumber: null,
     };
 
     this.handleStart = this.handleStart.bind(this);
@@ -86,59 +116,54 @@ class App extends Component {
 
   handleStart() {
     this.setState({
-      start: true,
+      isStarted: true,
       correctCount: 0,
-      wrongCount: 0,
       startTime: Date.now(),
-      endTime: null,
+      questionNumber: 1,
     });
   }
 
   handleStop() {
     this.setState({
-      start: false,
+      isStarted: false,
       endTime: Date.now(),
     });
   }
 
   handleAnswer(isCorrect) {
+    this.setState(prevState => ({ questionNumber: prevState.questionNumber + 1 }));
     if (isCorrect) {
       this.setState(prevState =>
         ({ correctCount: prevState.correctCount + 1 }),
-      );
-    } else {
-      this.setState(prevState =>
-        ({ wrongCount: prevState.wrongCount + 1 }),
-      );
-    }
-  }
-
-  renderMainSection() {
-    if (this.state.start === null) {
-      return (
-        <div>
-          <Score correct={this.state.correctCount} wrong={this.state.wrongCount}/>
-          {this.state.timeTaken ? <TimeCount timeTaken={this.state.timeTaken} /> : null}
-          <StartButton handleClick={this.handleStart} />
-        </div>
-      );
-    } else {
-      return (
-        <Question handleAnswer={this.handleAnswer} questionNumber={this.state.correctCount + this.state.wrongCount + 1}/>
       );
     }
   }
 
   render() {
+    const correctCount = this.state.correctCount;
+    const questionNumber = this.state.questionNumber;
+    const content = this.state.isStarted ?
+      (<StartedContent
+        questionNumber={questionNumber}
+        handleAnswer={this.handleAnswer}
+      />) :
+      (<StoppedContent
+        correctCount={correctCount}
+        totalCount={questionNumber - 1}
+        startTime={this.state.startTime}
+        endTime={this.state.endTime}
+        handleStart={this.handleStart}
+      />);
+
     return (
       <div className="App">
         <div className="App-header">
           <img src="https://s3-ap-southeast-1.amazonaws.com/intute/web-assets/Logos/Intute-Logo-100.png" className="App-logo" alt="logo" />
           <h2>Welcome to Intute Mental Math</h2>
-          {this.state.start ? <StopButton handleClick={this.handleStop} className="stop"/> : null}
+          {this.state.isStarted && <StopButton handleClick={this.handleStop} className="stop" />}
         </div>
         <div className="content-container">
-          {this.renderMainSection()}
+          {content}
         </div>
       </div>
     );
