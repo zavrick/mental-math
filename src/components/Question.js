@@ -72,14 +72,12 @@ class Question extends Component {
     let answer = equation.answer;
 
     if (parseInt(this.answerInput.value, 10) === parseInt(this.state.answer, 10)) {
-      console.log('correct');
       this.props.handleAnswer(true);
       this.setState({
         question,
         answer
       }, this.answerInput.value = '');
     } else {
-      console.log('wrong', this.state.answer);
       this.props.handleAnswer(false);
       this.setState({
         question,
