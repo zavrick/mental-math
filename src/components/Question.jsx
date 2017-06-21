@@ -23,52 +23,45 @@ class Question extends Component {
     return operator;
   }
 
-  static genRandNum({ max = 50 } = {}) {
-    return Math.floor((Math.random() * max) + 1);
+  static genRandNum({ max = 99 } = {}) {
+    const min = 0;
+    const bias = Math.floor((max / 3) * 2);
+    const influence = 1; // tweak this to minimise / maximise deviation
+    const rnd = (Math.random() * (max - min)) + min;
+    const mix = Math.random() * influence;
+    return Math.floor((rnd * (1 - mix)) + (bias * mix)) + 1;
   }
 
-  static makeRandEq() {
-    const operator = Question.genRandOpr();
-    let num1;
-    let num2;
-    let question;
-    let answer;
-    switch (operator) {
-      case 'x':
-        num1 = Question.genRandNum({ max: 12 });
-        num2 = Question.genRandNum({ max: 12 });
-        question = `${num1} ${operator} ${num2}`;
-        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
-        break;
-      case '÷':
-        answer = Question.genRandNum({ max: 12 });
-        num2 = Question.genRandNum({ max: 12 });
-        num1 = Question.evaluate({ opr: 'x', a: answer, b: num2 });
-        question = `${num1} ${operator} ${num2}`;
-        break;
-      case '-':
-        num1 = Question.genRandNum();
-        num2 = Question.genRandNum({ max: num1 });
-        question = `${num1} ${operator} ${num2}`;
-        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
-        break;
+  static getMaxPlusNum(difficulty) {
+    switch (difficulty) {
+      case 1:
+        return 9;
+      case 2:
+        return 30;
+      case 3:
+        return 50;
       default:
-        num1 = Question.genRandNum();
-        num2 = Question.genRandNum();
-        question = `${num1} ${operator} ${num2}`;
-        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
-        break;
+        return 50;
     }
-    return {
-      question,
-      answer,
-    };
+  }
+
+  static getMaxMultNum(difficulty) {
+    switch (difficulty) {
+      case 1:
+        return 3;
+      case 2:
+        return 9;
+      case 3:
+        return 12;
+      default:
+        return 12;
+    }
   }
 
   constructor(props) {
     super(props);
 
-    const equation = Question.makeRandEq();
+    const equation = this.makeRandEq();
     const question = equation.question;
     const answer = equation.answer;
 
@@ -88,11 +81,52 @@ class Question extends Component {
     this.answerInput.focus();
   }
 
+  makeRandEq() {
+    const difficulty = this.props.difficulty;
+    const maxPlusNum = Question.getMaxPlusNum(difficulty);
+    const maxMultNum = Question.getMaxMultNum(difficulty);
+    const operator = Question.genRandOpr();
+    let num1;
+    let num2;
+    let question;
+    let answer;
+    switch (operator) {
+      case 'x':
+        num1 = Question.genRandNum({ max: maxMultNum });
+        num2 = Question.genRandNum({ max: maxMultNum });
+        question = `${num1} ${operator} ${num2}`;
+        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
+        break;
+      case '÷':
+        answer = Question.genRandNum({ max: maxMultNum });
+        num2 = Question.genRandNum({ max: maxMultNum });
+        num1 = Question.evaluate({ opr: 'x', a: answer, b: num2 });
+        question = `${num1} ${operator} ${num2}`;
+        break;
+      case '-':
+        num1 = Question.genRandNum({ max: maxPlusNum });
+        num2 = Question.genRandNum({ max: num1 });
+        question = `${num1} ${operator} ${num2}`;
+        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
+        break;
+      default:
+        num1 = Question.genRandNum({ max: maxPlusNum });
+        num2 = Question.genRandNum({ max: maxPlusNum });
+        question = `${num1} ${operator} ${num2}`;
+        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
+        break;
+    }
+    return {
+      question,
+      answer,
+    };
+  }
+
   handleSubmit(event) {
     event.preventDefault();
 
     // Regen question
-    const equation = Question.makeRandEq();
+    const equation = this.makeRandEq();
     const question = equation.question;
     const answer = equation.answer;
     const isCorrect = Math.floor(this.answerInput.value) === Math.floor(this.state.answer);
@@ -131,6 +165,7 @@ class Question extends Component {
 }
 
 Question.propTypes = {
+  difficulty: PropTypes.number.isRequired,
   questionNumber: PropTypes.number.isRequired,
   handleAnswer: PropTypes.func.isRequired,
 };

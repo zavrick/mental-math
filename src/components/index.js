@@ -1,3 +1,7 @@
 import Question from './Question';
+import DifficultyPicker from './DifficultyPicker';
 
-export default Question;
+export {
+  Question,
+  DifficultyPicker,
+};
