@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import '../css/Question.css';
 
 class Question extends Component {
   static evaluate({ opr, a, b }) {
@@ -60,15 +61,10 @@ class Question extends Component {
 
   constructor(props) {
     super(props);
-
     const equation = this.makeRandEq();
     const question = equation.question;
     const answer = equation.answer;
-
-    this.state = {
-      question,
-      answer,
-    };
+    this.state = { question, answer };
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -85,37 +81,35 @@ class Question extends Component {
     const difficulty = this.props.difficulty;
     const maxPlusNum = Question.getMaxPlusNum(difficulty);
     const maxMultNum = Question.getMaxMultNum(difficulty);
-    const operator = Question.genRandOpr();
     let num1;
     let num2;
-    let question;
     let answer;
+    const operator = Question.genRandOpr();
+
     switch (operator) {
       case 'x':
         num1 = Question.genRandNum({ max: maxMultNum });
         num2 = Question.genRandNum({ max: maxMultNum });
-        question = `${num1} ${operator} ${num2}`;
         answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
         break;
       case '÷':
         answer = Question.genRandNum({ max: maxMultNum });
         num2 = Question.genRandNum({ max: maxMultNum });
         num1 = Question.evaluate({ opr: 'x', a: answer, b: num2 });
-        question = `${num1} ${operator} ${num2}`;
         break;
       case '-':
         num1 = Question.genRandNum({ max: maxPlusNum });
-        num2 = Question.genRandNum({ max: num1 });
-        question = `${num1} ${operator} ${num2}`;
+        num2 = Question.genRandNum({ max: num1 - 1 });
         answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
         break;
       default:
         num1 = Question.genRandNum({ max: maxPlusNum });
         num2 = Question.genRandNum({ max: maxPlusNum });
-        question = `${num1} ${operator} ${num2}`;
         answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
         break;
     }
+
+    const question = `${num1} ${operator} ${num2}`;
     return {
       question,
       answer,
@@ -130,7 +124,6 @@ class Question extends Component {
     const question = equation.question;
     const answer = equation.answer;
     const isCorrect = Math.floor(this.answerInput.value) === Math.floor(this.state.answer);
-
     this.props.handleAnswer(isCorrect);
     this.setState({ question, answer });
     this.answerInput.value = '';
@@ -153,11 +146,12 @@ class Question extends Component {
             <input
               type="number"
               ref={i => this.answerInput = i}
-              className="form-control"
+              className="Form__input"
               placeholder="Answer?"
             />
           </div>
-          <button type="submit" className="btn btn-primary">Submit</button>
+          <p className="QuestionForm__helper"> or just press &quot;Enter&quot; </p>
+          <button type="submit" className="QuestionForm__submit Button">Submit</button>
         </form>
       </div>
     );

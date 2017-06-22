@@ -19,7 +19,7 @@ function DifficultyButton(props) {
   const difficulty = DifficultyInWords(props.value);
   return (
     <button
-      className={`${props.isActive ? 'DifficultyButton--active' : ''} DifficultyButton`}
+      className={`${props.isActive ? 'DifficultyButton--active' : ''} DifficultyButton Button`}
       onClick={() => props.handleClick(props.value)}
     >
       {difficulty}

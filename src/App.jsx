@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import './App.css';
-import { Question, DifficultyPicker } from './components';
+import './css/App.css';
+import { Question, DifficultyPicker, SetSizePicker } from './components';
 
 function StartButton(props) {
   return (
-    <button className="btn btn-primary" onClick={props.handleClick}>
+    <button className="StartButton Button" onClick={props.handleClick}>
       Start
     </button>
   );
@@ -17,8 +17,8 @@ StartButton.propTypes = {
 
 function StopButton(props) {
   return (
-    <button className="btn" onClick={props.handleClick}>
-      Stop
+    <button className="StopButton Button" onClick={props.handleClick}>
+      Emergency Stop!
     </button>
   );
 }
@@ -77,6 +77,10 @@ function StoppedContent(props) {
         activeDifficulty={props.activeDifficulty}
         handleClick={props.handleDifficultySelect}
       />
+      <SetSizePicker
+        activeSetSize={props.activeSetSize}
+        handleClick={props.handleSetSizeSelect}
+      />
     </div>
   );
 }
@@ -89,6 +93,8 @@ StoppedContent.propTypes = {
   handleStart: PropTypes.func.isRequired,
   handleDifficultySelect: PropTypes.func.isRequired,
   activeDifficulty: PropTypes.number.isRequired,
+  handleSetSizeSelect: PropTypes.func.isRequired,
+  activeSetSize: PropTypes.number.isRequired,
 };
 
 function StartedContent(props) {
@@ -119,12 +125,14 @@ class App extends Component {
       startTime: 0,
       endTime: null,
       difficulty: 2,
+      setSize: 20,
     };
 
     this.handleStart = this.handleStart.bind(this);
     this.handleStop = this.handleStop.bind(this);
     this.handleAnswer = this.handleAnswer.bind(this);
     this.handleDifficultySelect = this.handleDifficultySelect.bind(this);
+    this.handleSetSizeSelect = this.handleSetSizeSelect.bind(this);
   }
 
   handleStart() {
@@ -144,8 +152,12 @@ class App extends Component {
   }
 
   handleAnswer(isCorrect) {
+    const setSize = this.state.setSize;
+    const questionNumber = this.state.questionNumber;
     this.setState(prevState => ({ questionNumber: prevState.questionNumber + 1 }));
-    if (isCorrect) {
+    if (questionNumber >= setSize) {
+      this.handleStop();
+    } else if (isCorrect) {
       this.setState(prevState =>
         ({ correctCount: prevState.correctCount + 1 }),
       );
@@ -156,9 +168,14 @@ class App extends Component {
     this.setState({ difficulty });
   }
 
+  handleSetSizeSelect(setSize) {
+    this.setState({ setSize });
+  }
+
   render() {
     const hasStarted = this.state.hasStarted;
     const difficulty = this.state.difficulty;
+    const setSize = this.state.setSize;
     const correctCount = this.state.correctCount;
     const questionNumber = this.state.questionNumber;
     const content = hasStarted ?
@@ -175,6 +192,8 @@ class App extends Component {
         handleStart={this.handleStart}
         handleDifficultySelect={this.handleDifficultySelect}
         activeDifficulty={difficulty}
+        handleSetSizeSelect={this.handleSetSizeSelect}
+        activeSetSize={setSize}
       />);
 
     return (

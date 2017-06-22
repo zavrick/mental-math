@@ -1,16 +1,16 @@
-.DifficultyButton {
+.SetSizeButton {
   margin: 0 12px;
   background-color: #c0c0c0;
 }
 
-.DifficultyButton:hover {
+.SetSizeButton:hover {
   background-color: #E57373;
 }
 
-.DifficultyButton--active {
+.SetSizeButton--active {
   background-color: #F44336;
 }
 
-.DifficultyButton--active:hover {
+.SetSizeButton--active:hover {
   background-color: #F44336;
 }
