@@ -155,13 +155,12 @@ class App extends Component {
     const setSize = this.state.setSize;
     const questionNumber = this.state.questionNumber;
     this.setState(prevState => ({ questionNumber: prevState.questionNumber + 1 }));
-    if (questionNumber >= setSize) {
-      this.handleStop();
-    } else if (isCorrect) {
+    if (isCorrect) {
       this.setState(prevState =>
         ({ correctCount: prevState.correctCount + 1 }),
       );
     }
+    if (questionNumber >= setSize) this.handleStop();
   }
 
   handleDifficultySelect(difficulty) {
