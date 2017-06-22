@@ -145,7 +145,7 @@ class Question extends Component {
           <div className="form-group">
             <input
               type="number"
-              ref={i => this.answerInput = i}
+              ref={i => (this.answerInput = i)}
               className="Form__input"
               placeholder="Answer?"
             />
