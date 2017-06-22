@@ -1,0 +1,16 @@
+.SetSizeButton {
+  margin: 0 12px;
+  background-color: #c0c0c0;
+}
+
+.SetSizeButton:hover {
+  background-color: #E57373;
+}
+
+.SetSizeButton--active {
+  background-color: #F44336;
+}
+
+.SetSizeButton--active:hover {
+  background-color: #F44336;
+}
