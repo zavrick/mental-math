@@ -64,7 +64,7 @@ TimeCount.propTypes = {
 };
 
 function StoppedContent(props) {
-  const report = props.endTime &&
+  const report = (props.totalCount >= 0) &&
     (<div>
       <Score correctCount={props.correctCount} totalCount={props.totalCount} />
       <TimeCount startTime={props.startTime} endTime={props.endTime} />
@@ -121,9 +121,9 @@ class App extends Component {
     this.state = {
       hasStarted: false,
       correctCount: 0,
-      questionNumber: null, // use this to infer totalCount
+      questionNumber: 0, // use this to infer totalCount
       startTime: 0,
-      endTime: null,
+      endTime: 0,
       difficulty: 2,
       setSize: 20,
     };
