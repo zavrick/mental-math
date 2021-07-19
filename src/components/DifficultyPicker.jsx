@@ -47,7 +47,7 @@ function DifficultyPicker(props) {
 
   return (
     <div className="DifficultyPicker">
-      <p> You are on {DifficultyInWords(activeDifficulty)} difficulty.</p>
+      <p> You selected <b>{DifficultyInWords(activeDifficulty)}</b> difficulty.</p>
       {buttons}
     </div>
   );

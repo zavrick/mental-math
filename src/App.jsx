@@ -199,7 +199,7 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <img src="https://s3-ap-southeast-1.amazonaws.com/intute/web-assets/Logos/Intute-Logo-100.png" className="App-logo" alt="logo" />
-          <h2>Welcome to Intute Mental Math</h2>
+          <h2>Welcome to Quick Math</h2>
           {this.state.hasStarted && <StopButton handleClick={this.handleStop} className="stop" />}
         </div>
         <div className="content-container">

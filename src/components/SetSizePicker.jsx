@@ -33,7 +33,7 @@ function SetSizePicker(props) {
 
   return (
     <div className="DifficultyPicker">
-      <p> You are doing {activeSetSize} questions.</p>
+      <p> You will be doing <b>{activeSetSize}</b> questions.</p>
       {buttons}
     </div>
   );
