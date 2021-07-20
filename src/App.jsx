@@ -68,6 +68,18 @@ function StoppedContent(props) {
     (<div>
       <Score correctCount={props.correctCount} totalCount={props.totalCount} />
       <TimeCount startTime={props.startTime} endTime={props.endTime} />
+      <div className="wrong-answers">
+        {
+          props.wrongAnswers.map((wrongAnswer) => {
+            return (
+              <div className="wrong-answer" key={props.wrongAnswers.indexOf(wrongAnswer)}>
+                {wrongAnswer}
+              </div>
+            );
+          })
+        }
+      </div>
+      <hr/>
     </div>);
   return (
     <div>
@@ -126,6 +138,7 @@ class App extends Component {
       endTime: 0,
       difficulty: 2,
       setSize: 20,
+      wrongAnswers: [],
     };
 
     this.handleStart = this.handleStart.bind(this);
@@ -151,14 +164,19 @@ class App extends Component {
     });
   }
 
-  handleAnswer(isCorrect) {
+  handleAnswer(isCorrect, question, inputAnswer, correctAnswer) {
     const setSize = this.state.setSize;
     const questionNumber = this.state.questionNumber;
+    let wrongAnswers = this.state.wrongAnswers;
+
     this.setState(prevState => ({ questionNumber: prevState.questionNumber + 1 }));
     if (isCorrect) {
       this.setState(prevState =>
         ({ correctCount: prevState.correctCount + 1 }),
       );
+    } else {
+      const wrongQuestionAnswer = `${question} = ${inputAnswer || "__"} (${correctAnswer})`;
+      this.setState({ wrongAnswers: wrongAnswers.concat(wrongQuestionAnswer) });
     }
     if (questionNumber >= setSize) this.handleStop();
   }
@@ -193,6 +211,7 @@ class App extends Component {
         activeDifficulty={difficulty}
         handleSetSizeSelect={this.handleSetSizeSelect}
         activeSetSize={setSize}
+        wrongAnswers={this.state.wrongAnswers}
       />);
 
     return (

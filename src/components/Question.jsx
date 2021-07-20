@@ -63,8 +63,8 @@ class Question extends Component {
     super(props);
     const equation = this.makeRandEq();
     const question = equation.question;
-    const answer = equation.answer;
-    this.state = { question, answer };
+    const correctAnswer = equation.correctAnswer;
+    this.state = { question, correctAnswer };
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -83,49 +83,52 @@ class Question extends Component {
     const maxMultNum = Question.getMaxMultNum(difficulty);
     let num1;
     let num2;
-    let answer;
+    let correctAnswer;
     const operator = Question.genRandOpr();
 
     switch (operator) {
       case 'x':
         num1 = Question.genRandNum({ max: maxMultNum });
         num2 = Question.genRandNum({ max: maxMultNum });
-        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
+        correctAnswer = Question.evaluate({ opr: operator, a: num1, b: num2 });
         break;
       case '÷':
-        answer = Question.genRandNum({ max: maxMultNum });
+        correctAnswer = Question.genRandNum({ max: maxMultNum });
         num2 = Question.genRandNum({ max: maxMultNum });
-        num1 = Question.evaluate({ opr: 'x', a: answer, b: num2 });
+        num1 = Question.evaluate({ opr: 'x', a: correctAnswer, b: num2 });
         break;
       case '-':
         num1 = Question.genRandNum({ max: maxPlusNum });
         num2 = Question.genRandNum({ max: num1 - 1 });
-        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
+        correctAnswer = Question.evaluate({ opr: operator, a: num1, b: num2 });
         break;
       default:
         num1 = Question.genRandNum({ max: maxPlusNum });
         num2 = Question.genRandNum({ max: maxPlusNum });
-        answer = Question.evaluate({ opr: operator, a: num1, b: num2 });
+        correctAnswer = Question.evaluate({ opr: operator, a: num1, b: num2 });
         break;
     }
 
     const question = `${num1} ${operator} ${num2}`;
     return {
       question,
-      answer,
+      correctAnswer,
     };
   }
 
   handleSubmit(event) {
     event.preventDefault();
 
+    // Check answer
+    const inputAnswer = this.answerInput.value;
+    const isCorrect = Math.floor(inputAnswer) === Math.floor(this.state.correctAnswer);
+    this.props.handleAnswer(isCorrect, this.state.question, inputAnswer, this.state.correctAnswer);
+
     // Regen question
     const equation = this.makeRandEq();
     const question = equation.question;
-    const answer = equation.answer;
-    const isCorrect = Math.floor(this.answerInput.value) === Math.floor(this.state.answer);
-    this.props.handleAnswer(isCorrect);
-    this.setState({ question, answer });
+    const correctAnswer = equation.correctAnswer;
+    this.setState({ question, correctAnswer });
     this.answerInput.value = '';
   }
 

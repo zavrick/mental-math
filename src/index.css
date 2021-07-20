@@ -12,6 +12,15 @@ body {
   margin-bottom: 20px;
   font-size: 1.8rem;
 }
+
+.wrong-answers {
+  margin-bottom: 20px;
+}
+
+.wrong-answer {
+  margin-bottom: 5px;
+}
+
 .question-text {
   font-size: 2rem;
 }
